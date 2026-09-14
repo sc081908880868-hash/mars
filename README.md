@@ -1,4 +1,4 @@
-# Whitesands Fund
+# SSJ Managements
 
 Read-only website dashboard for the Indonesian portfolio.
 
@@ -22,6 +22,6 @@ It refreshes automatically every 4 minutes and also has a manual refresh button.
 
 ## Sharing Note
 
-This is a static website. To make it shareable, upload this folder to a static host such as Netlify, Vercel, GitHub Pages, or a small private server.
+This static website is published by Netlify from the GitHub repository's `main` branch. Push validated updates to `main`; Netlify deploys them automatically.
 
 Important: because the website reads directly from Google Sheets, anyone who can open the website may be able to see the spreadsheet ID in the page source. For a higher-security version, put a small private backend or Google Apps Script layer between the website and the sheet, then publish only filtered summary data.
