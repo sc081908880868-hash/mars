@@ -1,0 +1,405 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <meta name="theme-color" content="#05070a" />
+    <title>SSJ MANAGEMENTS</title>
+    <meta name="description" content="Private SSJ Managements portfolio dashboard and equity research library." />
+    <meta property="og:title" content="SSJ Managements Fund Dashboard" />
+    <meta property="og:description" content="Portfolio performance, active books, and institutional-style equity research." />
+    <meta property="og:type" content="website" />
+    <meta property="og:url" content="https://ssjmanagements.netlify.app" />
+    <meta property="og:image" content="https://ssjmanagements.netlify.app/og.png" />
+    <meta name="twitter:card" content="summary_large_image" />
+    <meta name="twitter:title" content="SSJ Managements Fund Dashboard" />
+    <meta name="twitter:description" content="Portfolio performance, active books, and institutional-style equity research." />
+    <meta name="twitter:image" content="https://ssjmanagements.netlify.app/og.png" />
+    <link rel="stylesheet" href="./styles.css?v=antm-research-20260913" />
+  </head>
+  <body>
+    <div class="market-tape" aria-label="Delayed market tape">
+      <div class="market-tape-viewport">
+        <div class="market-tape-track" id="marketTapeTrack">
+          <div class="market-tape-group">
+            <span class="tape-item neutral"><strong>SSJ</strong><b>Connecting portfolio</b></span>
+          </div>
+        </div>
+      </div>
+      <button class="tape-toggle" id="tapeToggle" type="button" aria-pressed="false" aria-label="Pause market tape">Pause</button>
+    </div>
+
+    <div class="app-shell">
+      <aside class="sidebar" aria-label="Fund navigation">
+        <div class="brand-lockup">
+          <div class="brand-mark" aria-hidden="true">
+            <svg viewBox="8 8 80 72" role="presentation" focusable="false">
+              <path class="brand-pillar brand-pillar-left" d="M18 69V36L33 27V69Z" />
+              <path class="brand-pillar brand-pillar-center" d="M40 78V25L56 14V69Z" />
+              <path class="brand-pillar brand-pillar-right" d="M63 69V28L78 38V69Z" />
+              <path class="brand-floor" d="M15 75H81" />
+            </svg>
+          </div>
+          <div class="brand-copy">
+            <h1><span>SSJ</span><span>MANAGEMENTS</span></h1>
+            <p>BY MAGENTA CAPITAL</p>
+          </div>
+        </div>
+
+        <button class="mobile-menu-button" id="mobileMenuButton" type="button" aria-expanded="false" aria-controls="fundNavigation">
+          <span>Funds</span><b aria-hidden="true">Menu</b>
+        </button>
+
+        <nav id="fundNavigation">
+          <a href="#overview" class="nav-link active" data-view="overview">
+            <span>Overview</span><small>Combined funds</small>
+          </a>
+          <a href="#freddy" class="nav-link" data-view="freddy">
+            <span>PI Freddy</span><small>Active</small>
+          </a>
+          <a href="#jason" class="nav-link" data-view="jason">
+            <span>PI Jason</span><small>Active</small>
+          </a>
+          <a href="#shem" class="nav-link" data-view="shem">
+            <span>PI Shem</span><small>Active</small>
+          </a>
+          <a href="#robby" class="nav-link" data-view="robby">
+            <span>PI Robby</span><small>Closed</small>
+          </a>
+          <a href="#research" class="nav-link" data-view="research">
+            <span>Research</span><small>Research & outlooks</small>
+          </a>
+        </nav>
+
+        <div class="sync-panel">
+          <span class="sync-dot" id="syncDot"></span>
+          <div>
+            <strong id="syncState">Loading</strong>
+            <small id="lastUpdated">Connecting to sheet</small>
+          </div>
+        </div>
+      </aside>
+
+      <main>
+        <header class="topbar overview-mode">
+          <div>
+            <p class="eyebrow" id="viewEyebrow">Executive fund dashboard</p>
+            <h2 id="viewTitle">PI Freddy Overview</h2>
+          </div>
+          <div class="top-actions">
+            <span class="refresh-note" id="refreshNote">Auto refresh on</span>
+            <button class="icon-button" id="refreshButton" type="button" title="Refresh data" aria-label="Refresh data">
+              <span aria-hidden="true">&#8635;</span>
+            </button>
+          </div>
+        </header>
+
+        <section class="app-view is-active" id="view-overview" data-view-panel="overview">
+          <article class="fund-hero combined-hero">
+            <div class="hero-heading">
+              <div>
+                <p class="eyebrow">SSJ active funds</p>
+                <h3>Combined Portfolio Performance</h3>
+              </div>
+              <span class="status-chip active">3 active books</span>
+            </div>
+            <div class="hero-body">
+              <strong class="hero-value" id="overviewTotalPnl">-</strong>
+              <div class="hero-breakdown">
+                <span>Combined realized <b id="overviewRealized">-</b></span>
+                <span>Combined unrealized <b id="overviewUnrealized">-</b></span>
+                <span>Total exposure <b id="overviewMarketValue">-</b></span>
+              </div>
+            </div>
+          </article>
+
+          <section class="performance-blast" aria-labelledby="combinedWinRateTitle">
+            <div class="performance-blast-lead">
+              <div class="performance-blast-kicker">
+                <span>Aug–Sep 2026</span>
+                <b>Partial sells included</b>
+              </div>
+              <p id="combinedWinRateTitle">Combined Win Rate</p>
+              <strong>73.33%</strong>
+              <div class="win-loss-track" aria-label="22 winning sells and 8 losing sells">
+                <span style="width: 73.33%"></span>
+              </div>
+              <small><b>22 wins</b> / 8 losses across 30 realized sell transactions</small>
+            </div>
+            <div class="performance-blast-metrics">
+              <article><span>Net Realized P/L</span><strong class="positive">+Rp67.11M</strong></article>
+              <article><span>Profit Factor</span><strong>3.36×</strong></article>
+              <article><span>Average Win</span><strong class="positive">+Rp4.34M</strong></article>
+              <article><span>Average Loss</span><strong class="negative">-Rp3.55M</strong></article>
+              <article><span>Expectancy / Sell</span><strong class="positive">+Rp2.24M</strong></article>
+            </div>
+          </section>
+
+          <section class="overview-kpis" aria-label="Portfolio summary without NAV">
+            <article class="overview-kpi"><span class="has-tooltip" tabindex="0" data-tooltip="Combined profit or loss across the three active books.">Combined P/L</span><strong id="overviewActivePnl">-</strong><small>Freddy, Jason &amp; Shem</small></article>
+            <article class="overview-kpi"><span class="has-tooltip" tabindex="0" data-tooltip="Month-to-date movement recorded for the combined active portfolio.">MTD Growth</span><strong id="overviewDailyPnl">-</strong><small>Combined active funds</small></article>
+            <article class="overview-kpi"><span class="has-tooltip" tabindex="0" data-tooltip="Cash remaining after recorded transaction fees for the satellite books.">Cash Available</span><strong id="overviewCash">-</strong><small>Jason &amp; Shem</small></article>
+            <article class="overview-kpi"><span class="has-tooltip" tabindex="0" data-tooltip="Current market value of all open positions across active books.">Market Exposure</span><strong id="overviewExposure">-</strong><small>Open holdings</small></article>
+            <article class="overview-kpi"><span>Open Positions</span><strong id="overviewOpenPositions">-</strong><small>Across active books</small></article>
+          </section>
+
+          <div class="section-heading">
+            <div><p class="eyebrow">Active mandates</p><h3>Fund Performance</h3></div>
+            <span class="muted-note">Three books contributing to one portfolio</span>
+          </div>
+          <section class="fund-snapshot-grid" id="fundSnapshotGrid" aria-label="Fund snapshot"></section>
+
+          <section class="overview-grid overview-performance-grid">
+            <article class="panel chart-panel">
+              <div class="section-heading compact">
+                <div><p class="eyebrow">All active funds</p><h3>Combined Portfolio Growth</h3></div>
+                <div class="chart-controls" aria-label="Overview chart period">
+                  <span class="pill" id="overviewPerformanceRange">Loading</span>
+                </div>
+              </div>
+              <div class="chart-card combined-growth-chart"><canvas id="overviewReturnChart" height="280" data-chart-height="280"></canvas></div>
+            </article>
+          </section>
+
+          <section class="overview-grid overview-lower-grid">
+            <article class="panel">
+              <div class="section-heading compact"><div><p class="eyebrow">Capital allocation</p><h3>Active Book Mix</h3></div><span class="pill">By market value</span></div>
+              <div class="donut-wrap overview-donut-wrap"><div class="donut" id="overviewFundDonut"></div><div class="donut-legend" id="overviewFundLegend"></div></div>
+            </article>
+            <article class="panel">
+              <div class="section-heading compact"><div><p class="eyebrow">Performance attribution</p><h3>Fund P/L Contribution</h3></div><span class="pill">Combined total</span></div>
+              <div class="contribution-list" id="overviewContributionList"></div>
+            </article>
+          </section>
+        </section>
+
+        <section class="app-view" id="view-freddy" data-view-panel="freddy" hidden>
+          <article class="fund-hero">
+            <div class="hero-heading">
+              <div><p class="eyebrow">Primary active book</p><h3>PI Freddy Total P/L</h3></div>
+              <span class="status-chip active">Active</span>
+            </div>
+            <div class="hero-body">
+              <strong class="hero-value" id="freddyTotalPnl">-</strong>
+              <div class="hero-breakdown">
+                <span>Realized <b id="freddyRealized">-</b></span>
+                <span>Unrealized <b id="freddyUnrealized">-</b></span>
+                <span>Open positions <b id="freddyOpenCount">-</b></span>
+              </div>
+            </div>
+          </article>
+
+          <section class="metric-grid metrics-strip">
+            <article class="metric-card"><span class="has-tooltip" tabindex="0" data-tooltip="Current scenario price multiplied by open shares.">Market Value</span><strong id="freddyMarketValue">-</strong><small>Current open book</small></article>
+            <article class="metric-card"><span class="has-tooltip" tabindex="0" data-tooltip="Weighted-average acquisition cost of open positions.">Cost Basis</span><strong id="freddyCostBasis">-</strong><small>WAC cost of open positions</small></article>
+            <article class="metric-card"><span class="has-tooltip" tabindex="0" data-tooltip="Estimated transaction fees recorded in the source sheet.">Estimated Fees</span><strong id="freddyFees">-</strong><small>Statement activity</small></article>
+            <article class="metric-card"><span class="has-tooltip" tabindex="0" data-tooltip="Share of completed trades with a positive net result.">Win Rate</span><strong id="freddyWinRate">-</strong><small id="freddyProfitFactor">Profit factor</small></article>
+          </section>
+
+          <section class="panel portfolio-workspace fund-positions-panel">
+            <div class="section-heading"><div><p class="eyebrow">Live exposure</p><h3>Open Positions</h3></div><span class="pill" id="freddyPositionStatus">Loading</span></div>
+            <div class="position-cards position-card-feed" id="freddyPositionCards"></div>
+            <div class="portfolio-layout">
+              <div class="positions-table-pane table-wrap"><table><thead><tr><th>Ticker</th><th>Lots</th><th>Avg Cost</th><th>Scenario Price</th><th>Market Value</th><th>Unrealized</th><th>Weight</th><th>Risk</th></tr></thead><tbody id="freddyPositionsTable"></tbody></table></div>
+              <aside class="allocation-pane" aria-label="PI Freddy allocation">
+                <div><p class="eyebrow">Allocation</p><h4>Position Mix</h4></div>
+                <div class="donut-wrap"><div class="donut" id="freddyDonut"></div><div class="donut-legend" id="freddyLegend"></div></div>
+              </aside>
+            </div>
+          </section>
+
+          <section class="performance-band">
+            <article class="panel chart-panel">
+              <div class="section-heading compact"><div><p class="eyebrow">Benchmark</p><h3>Return vs IHSG</h3></div><div class="chart-controls"><div class="range-switch" role="group" aria-label="Performance range"><button type="button" data-chart-range="1D">1D</button><button type="button" data-chart-range="1W">1W</button><button type="button" data-chart-range="1M" class="active">1M</button><button type="button" data-chart-range="ALL">All</button></div><span class="pill" id="freddyPerformanceRange">Loading</span></div></div>
+              <div class="chart-card"><canvas id="freddyReturnChart" height="230" data-chart-height="230"></canvas></div>
+            </article>
+          </section>
+
+          <section class="panel">
+            <div class="section-heading"><div><p class="eyebrow">Latest realized activity</p><h3>Recent Exits</h3></div><span class="pill">Net fees</span></div>
+            <div class="table-wrap"><table><thead><tr><th>Ticker</th><th>Date</th><th>Lots</th><th>Buy</th><th>Sell</th><th>Net P/L</th><th>Return</th></tr></thead><tbody id="freddyTradesTable"></tbody></table></div>
+          </section>
+
+          <section class="panel collapsible is-collapsed">
+            <div class="section-heading">
+              <button class="section-toggle" type="button" data-collapse-target="freddyDetailBody" aria-expanded="false">
+                <div><p class="eyebrow">Open-cycle detail</p><h3>Position Transactions</h3></div><span class="toggle-icon" aria-hidden="true"></span>
+              </button>
+            </div>
+            <div class="collapsible-body" id="freddyDetailBody" hidden><div class="position-blocks" id="freddyPositionBlocks"></div></div>
+          </section>
+        </section>
+
+        <section class="app-view" id="view-jason" data-view-panel="jason" hidden>
+          <article class="fund-hero blue-hero">
+            <div class="hero-heading">
+              <div><p class="eyebrow">Active satellite book</p><h3>PI Jason Total P/L</h3></div>
+              <span class="status-chip active">Active</span>
+            </div>
+            <div class="hero-body">
+              <strong class="hero-value" id="jasonTotalPnl">-</strong>
+              <div class="hero-breakdown">
+                <span>Realized <b id="jasonRealized">-</b></span>
+                <span>Unrealized <b id="jasonUnrealized">-</b></span>
+                <span>Net return <b id="jasonReturn">-</b></span>
+              </div>
+            </div>
+          </article>
+
+          <section class="metric-grid metrics-strip">
+            <article class="metric-card"><span>Starting Capital</span><strong id="jasonStartCapital">-</strong><small>Allocated capital</small></article>
+            <article class="metric-card"><span>Cash</span><strong id="jasonCash">-</strong><small>After fees</small></article>
+            <article class="metric-card"><span>Market Value</span><strong id="jasonMarketValue">-</strong><small>Open positions</small></article>
+            <article class="metric-card"><span>Total Fees</span><strong id="jasonFees">-</strong><small>Buy and sell fees</small></article>
+          </section>
+
+          <section class="panel portfolio-workspace fund-positions-panel">
+            <div class="section-heading"><div><p class="eyebrow">Live exposure</p><h3>Open Positions</h3></div><span class="pill" id="jasonPositionStatus">Loading</span></div>
+            <div class="position-cards position-card-feed" id="jasonPositionCards"></div>
+            <div class="portfolio-layout">
+              <div class="positions-table-pane table-wrap"><table><thead><tr><th>Ticker</th><th>Lots</th><th>Avg Cost</th><th>Current</th><th>Market Value</th><th>Open P/L</th><th>Return</th><th>Weight</th></tr></thead><tbody id="jasonPositionsTable"></tbody></table></div>
+              <aside class="allocation-pane" aria-label="PI Jason allocation">
+                <div><p class="eyebrow">Allocation</p><h4>Position Mix</h4></div>
+                <div class="donut-wrap"><div class="donut" id="jasonDonut"></div><div class="donut-legend" id="jasonLegend"></div></div>
+              </aside>
+            </div>
+          </section>
+
+          <section class="ledger-band">
+            <article class="panel ledger-panel">
+              <div class="section-heading compact"><div><p class="eyebrow">Execution ledger</p><h3>Recent Transactions</h3></div><span class="pill" id="jasonTradeCount">-</span></div>
+              <div class="table-wrap compact-table"><table><thead><tr><th>Date</th><th>Ticker</th><th>Side</th><th>Price</th><th>Lots</th><th>Cash Flow</th><th>P/L</th></tr></thead><tbody id="jasonTradesTable"></tbody></table></div>
+            </article>
+          </section>
+        </section>
+
+        <section class="app-view" id="view-shem" data-view-panel="shem" hidden>
+          <article class="fund-hero green-hero">
+            <div class="hero-heading">
+              <div><p class="eyebrow">Active growth book</p><h3>PI Shem Total P/L</h3></div>
+              <span class="status-chip active">Active</span>
+            </div>
+            <div class="hero-body">
+              <strong class="hero-value" id="shemTotalPnl">-</strong>
+              <div class="hero-breakdown">
+                <span>Realized <b id="shemRealized">-</b></span>
+                <span>Unrealized <b id="shemUnrealized">-</b></span>
+                <span>Net return <b id="shemReturn">-</b></span>
+              </div>
+            </div>
+          </article>
+
+          <section class="metric-grid metrics-strip">
+            <article class="metric-card"><span>Starting Capital</span><strong id="shemStartCapital">-</strong><small>Allocated capital</small></article>
+            <article class="metric-card"><span>Cash</span><strong id="shemCash">-</strong><small>After fees</small></article>
+            <article class="metric-card"><span>Market Value</span><strong id="shemMarketValue">-</strong><small>Open positions</small></article>
+            <article class="metric-card"><span>Total Fees</span><strong id="shemFees">-</strong><small>Buy and sell fees</small></article>
+          </section>
+
+          <section class="panel portfolio-workspace fund-positions-panel">
+            <div class="section-heading"><div><p class="eyebrow">Live exposure</p><h3>Open Positions</h3></div><span class="pill" id="shemPositionStatus">Loading</span></div>
+            <div class="position-cards position-card-feed" id="shemPositionCards"></div>
+            <div class="portfolio-layout">
+              <div class="positions-table-pane table-wrap"><table><thead><tr><th>Ticker</th><th>Lots</th><th>Avg Cost</th><th>Current</th><th>Market Value</th><th>Open P/L</th><th>Return</th><th>Weight</th></tr></thead><tbody id="shemPositionsTable"></tbody></table></div>
+              <aside class="allocation-pane" aria-label="PI Shem allocation">
+                <div><p class="eyebrow">Allocation</p><h4>Position Mix</h4></div>
+                <div class="donut-wrap"><div class="donut" id="shemDonut"></div><div class="donut-legend" id="shemLegend"></div></div>
+              </aside>
+            </div>
+          </section>
+
+          <section class="ledger-band">
+            <article class="panel ledger-panel">
+              <div class="section-heading compact"><div><p class="eyebrow">Execution ledger</p><h3>Recent Transactions</h3></div><span class="pill" id="shemTradeCount">-</span></div>
+              <div class="table-wrap compact-table"><table><thead><tr><th>Date</th><th>Ticker</th><th>Side</th><th>Price</th><th>Lots</th><th>Cash Flow</th><th>P/L</th></tr></thead><tbody id="shemTradesTable"></tbody></table></div>
+            </article>
+          </section>
+        </section>
+
+        <section class="app-view" id="view-robby" data-view-panel="robby" hidden>
+          <article class="fund-hero closed-hero">
+            <div class="hero-heading">
+              <div><p class="eyebrow">Completed mandate</p><h3>PI Robby Final P/L</h3></div>
+              <span class="status-chip closed">Closed</span>
+            </div>
+            <div class="hero-body">
+              <strong class="hero-value" id="robbyTotalPnl">-</strong>
+              <div class="hero-breakdown">
+                <span>Starting capital <b id="robbyStartCapitalHero">-</b></span>
+                <span>Ending cash <b id="robbyEndCashHero">-</b></span>
+                <span>Net return <b id="robbyReturn">-</b></span>
+              </div>
+            </div>
+          </article>
+
+          <section class="metric-grid metrics-strip">
+            <article class="metric-card"><span>Starting Capital</span><strong id="robbyStartCapital">-</strong><small>Initial allocation</small></article>
+            <article class="metric-card"><span>Ending Cash</span><strong id="robbyEndingCash">-</strong><small>All positions closed</small></article>
+            <article class="metric-card"><span>Total Fees</span><strong id="robbyFees">-</strong><small>Execution burden</small></article>
+            <article class="metric-card"><span>Executed Trades</span><strong id="robbyTradeCount">-</strong><small>Buy and sell rows</small></article>
+          </section>
+
+          <section class="panel">
+            <div class="section-heading"><div><p class="eyebrow">Closed-book review</p><h3>What Drove Performance</h3></div><span class="pill" id="robbyClosedDate">Closed</span></div>
+            <div class="insight-grid" id="robbyInsightGrid"></div>
+          </section>
+
+          <section class="analysis-grid">
+            <article class="panel">
+              <div class="section-heading compact"><div><p class="eyebrow">Ticker attribution</p><h3>Winners &amp; Losers</h3></div></div>
+              <div class="table-wrap compact-table"><table><thead><tr><th>Ticker</th><th>Net Realized</th><th>Sell Fills</th><th>Lots Sold</th></tr></thead><tbody id="robbyTickerTable"></tbody></table></div>
+            </article>
+            <article class="panel">
+              <div class="section-heading compact"><div><p class="eyebrow">Final activity</p><h3>Closing Timeline</h3></div></div>
+              <div class="timeline" id="robbyTimeline"></div>
+            </article>
+          </section>
+        </section>
+
+        <section class="app-view" id="view-research" data-view-panel="research" hidden>
+          <section class="document-section">
+            <div class="section-heading compact"><div><p class="eyebrow">Stock research</p><h3>Equity Research</h3></div><span class="pill">3 reports</span></div>
+            <div class="research-grid">
+              <article class="research-card">
+                <header><div><span class="research-ticker">ANTM</span><h4>Aneka Tambang Tbk.</h4></div><span class="rating-chip">BUY</span></header>
+                <p class="research-insight">Stronger H1 profitability and widening margins support the thesis, while cash conversion, persistent broker accumulation, and support at 3,035-3,140 remain the key confirmation tests.</p>
+                <div class="target-row"><span>Technical thesis</span><strong><span class="target-pending">Current 3,210 / Target 4,400</span></strong></div>
+                <a class="research-link" href="./research/antm-equity-research-2026.pdf" target="_blank" rel="noopener">Open full PDF</a>
+              </article>
+              <article class="research-card">
+                <header><div><span class="research-ticker">EMAS</span><h4>Merdeka Gold Resources Tbk.</h4></div><span class="rating-chip">BUY</span></header>
+                <p class="research-insight">EMAS reached its first recovery target at 9,700. The 14,000+ bull-case target remains active if accumulation and momentum continue.</p>
+                <div class="target-row"><span>Recovery thesis</span><strong><span class="target-hit">TP1 9,700 hit</span><span class="target-pending">Next 14,000+</span></strong></div>
+                <a class="research-link" href="./research/emas-stock-research.pdf" target="_blank" rel="noopener">Open full PDF</a>
+              </article>
+              <article class="research-card">
+                <header><div><span class="research-ticker">DSSA</span><h4>Dian Swastatika Sentosa Tbk.</h4></div><span class="rating-chip">BUY</span></header>
+                <p class="research-insight">DSSA reached its first rebound target at 1,035. The higher 1,470 and 2,340 scenarios remain active if momentum and accumulation continue.</p>
+                <div class="target-row"><span>Rebound thesis</span><strong><span class="target-hit">1,035 hit</span><span class="target-pending">Next 1,470 / 2,340</span></strong></div>
+                <a class="research-link" href="./research/dssa-stock-research.pdf" target="_blank" rel="noopener">Open full PDF</a>
+              </article>
+            </div>
+          </section>
+          <section class="document-section">
+            <div class="section-heading compact"><div><p class="eyebrow">Market outlook</p><h3>Market Outlooks</h3></div><span class="pill">1 outlook</span></div>
+            <div class="research-grid outlook-grid">
+              <article class="research-card outlook-card">
+                <header><div><span class="research-ticker">IHSG</span><h4>IHSG Market Outlook</h4></div><span class="rating-chip neutral-chip">MARKET OUTLOOK</span></header>
+                <p class="research-insight">English market outlook for 24-28 August 2026 covering IHSG bias, market drivers, sector watch, risks, and confirmation signals.</p>
+                <div class="target-row"><span>Bias</span><strong>Neutral - Positive</strong></div>
+                <a class="research-link" href="./research/ihsg-market-outlook-english.pdf" target="_blank" rel="noopener">Open market outlook</a>
+              </article>
+            </div>
+          </section>
+        </section>
+
+        <footer>
+          <span>Read-only view. Google Sheets remains the source of truth.</span>
+          <span>Sensitive raw tabs are not displayed.</span>
+        </footer>
+      </main>
+    </div>
+
+    <script src="./app.js?v=antm-research-20260913"></script>
+  </body>
+</html>
