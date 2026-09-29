@@ -15,7 +15,7 @@
     <meta name="twitter:title" content="SSJ Managements Fund Dashboard" />
     <meta name="twitter:description" content="Portfolio performance, active books, and institutional-style equity research." />
     <meta name="twitter:image" content="https://ssjmanagements.netlify.app/og.png" />
-    <link rel="stylesheet" href="./styles.css?v=antm-research-20260913" />
+    <link rel="stylesheet" href="./styles.css?v=equity-impact-20260929" />
   </head>
   <body>
     <div class="market-tape" aria-label="Delayed market tape">
@@ -32,18 +32,19 @@
     <div class="app-shell">
       <aside class="sidebar" aria-label="Fund navigation">
         <div class="brand-lockup">
-          <div class="brand-mark" aria-hidden="true">
-            <svg viewBox="8 8 80 72" role="presentation" focusable="false">
-              <path class="brand-pillar brand-pillar-left" d="M18 69V36L33 27V69Z" />
-              <path class="brand-pillar brand-pillar-center" d="M40 78V25L56 14V69Z" />
-              <path class="brand-pillar brand-pillar-right" d="M63 69V28L78 38V69Z" />
-              <path class="brand-floor" d="M15 75H81" />
-            </svg>
-          </div>
-          <div class="brand-copy">
-            <h1><span>SSJ</span><span>MANAGEMENTS</span></h1>
-            <p>BY MAGENTA CAPITAL</p>
-          </div>
+          <svg class="brand-logo" viewBox="0 0 2120 742" role="img" aria-labelledby="ssjLogoTitle">
+            <title id="ssjLogoTitle">SSJ Managements by Magenta Capital</title>
+            <defs>
+              <filter id="logoSilver" color-interpolation-filters="sRGB">
+                <feColorMatrix type="matrix" values="0 0 0 0 .95  0 0 0 0 .97  0 0 0 0 .99  0 0 0 1 0" />
+              </filter>
+              <filter id="logoMagenta" color-interpolation-filters="sRGB">
+                <feColorMatrix type="matrix" values="1 0 0 0 0  0 1 0 0 0  0 0 1 0 0  3 -1.5 -1.5 0 -.5" />
+              </filter>
+            </defs>
+            <image href="./ssj-managements-logo-transparent.png" width="2120" height="742" filter="url(#logoSilver)" />
+            <image href="./ssj-managements-logo-transparent.png" width="2120" height="742" filter="url(#logoMagenta)" />
+          </svg>
         </div>
 
         <button class="mobile-menu-button" id="mobileMenuButton" type="button" aria-expanded="false" aria-controls="fundNavigation">
@@ -95,34 +96,45 @@
         </header>
 
         <section class="app-view is-active" id="view-overview" data-view-panel="overview">
-          <article class="fund-hero combined-hero">
+          <article class="fund-hero combined-hero total-equity-hero">
             <div class="hero-heading">
-              <div>
-                <p class="eyebrow">SSJ active funds</p>
-                <h3>Combined Portfolio Performance</h3>
-              </div>
-              <span class="status-chip active">3 active books</span>
+              <p class="eyebrow">Total Equity</p>
             </div>
             <div class="hero-body">
-              <strong class="hero-value" id="overviewTotalPnl">-</strong>
-              <div class="hero-breakdown">
-                <span>Combined realized <b id="overviewRealized">-</b></span>
-                <span>Combined unrealized <b id="overviewUnrealized">-</b></span>
-                <span>Total exposure <b id="overviewMarketValue">-</b></span>
-              </div>
+              <strong class="hero-value" id="overviewTotalEquity">-</strong>
             </div>
           </article>
 
+          <section class="overview-active-books" aria-label="Active funds">
+            <div class="fund-snapshot-grid" id="fundSnapshotGrid" aria-label="Fund snapshot"></div>
+          </section>
+
+          <section class="overview-grid overview-performance-grid">
+            <article class="panel chart-panel">
+              <div class="section-heading compact">
+                <h3>MTD Growth</h3>
+                <div class="chart-controls" aria-label="Overview chart period">
+                  <span class="pill" id="overviewPerformanceRange">Loading</span>
+                </div>
+              </div>
+              <div class="chart-card combined-growth-chart"><canvas id="overviewReturnChart" height="280" data-chart-height="280"></canvas></div>
+            </article>
+          </section>
+
+          <section class="overview-kpis" aria-label="Portfolio summary without NAV">
+            <article class="overview-kpi"><span class="has-tooltip" tabindex="0" data-tooltip="Combined profit or loss across the three active books.">Combined P/L</span><strong id="overviewActivePnl">-</strong></article>
+            <article class="overview-kpi"><span class="has-tooltip" tabindex="0" data-tooltip="Month-to-date movement recorded for the combined active portfolio.">MTD Growth</span><strong id="overviewDailyPnl">-</strong></article>
+            <article class="overview-kpi"><span class="has-tooltip" tabindex="0" data-tooltip="Cash remaining after recorded transaction fees for PI Jason and PI Shem.">Cash Available</span><strong id="overviewCash">-</strong></article>
+            <article class="overview-kpi"><span class="has-tooltip" tabindex="0" data-tooltip="Current market value of all open positions across active books.">Market Exposure</span><strong id="overviewExposure">-</strong></article>
+            <article class="overview-kpi"><span>Open Positions</span><strong id="overviewOpenPositions">-</strong></article>
+          </section>
+
           <section class="performance-blast" aria-labelledby="combinedWinRateTitle">
             <div class="performance-blast-lead">
-              <div class="performance-blast-kicker">
-                <span>Aug–Sep 2026</span>
-                <b>Partial sells included</b>
-              </div>
-              <p id="combinedWinRateTitle">Combined Win Rate</p>
-              <strong>73.33%</strong>
+              <p id="combinedWinRateTitle">Win Rate</p>
+              <strong>75%</strong>
               <div class="win-loss-track" aria-label="22 winning sells and 8 losing sells">
-                <span style="width: 73.33%"></span>
+                <span style="width: 75%"></span>
               </div>
               <small><b>22 wins</b> / 8 losses across 30 realized sell transactions</small>
             </div>
@@ -135,39 +147,13 @@
             </div>
           </section>
 
-          <section class="overview-kpis" aria-label="Portfolio summary without NAV">
-            <article class="overview-kpi"><span class="has-tooltip" tabindex="0" data-tooltip="Combined profit or loss across the three active books.">Combined P/L</span><strong id="overviewActivePnl">-</strong><small>Freddy, Jason &amp; Shem</small></article>
-            <article class="overview-kpi"><span class="has-tooltip" tabindex="0" data-tooltip="Month-to-date movement recorded for the combined active portfolio.">MTD Growth</span><strong id="overviewDailyPnl">-</strong><small>Combined active funds</small></article>
-            <article class="overview-kpi"><span class="has-tooltip" tabindex="0" data-tooltip="Cash remaining after recorded transaction fees for the satellite books.">Cash Available</span><strong id="overviewCash">-</strong><small>Jason &amp; Shem</small></article>
-            <article class="overview-kpi"><span class="has-tooltip" tabindex="0" data-tooltip="Current market value of all open positions across active books.">Market Exposure</span><strong id="overviewExposure">-</strong><small>Open holdings</small></article>
-            <article class="overview-kpi"><span>Open Positions</span><strong id="overviewOpenPositions">-</strong><small>Across active books</small></article>
-          </section>
-
-          <div class="section-heading">
-            <div><p class="eyebrow">Active mandates</p><h3>Fund Performance</h3></div>
-            <span class="muted-note">Three books contributing to one portfolio</span>
-          </div>
-          <section class="fund-snapshot-grid" id="fundSnapshotGrid" aria-label="Fund snapshot"></section>
-
-          <section class="overview-grid overview-performance-grid">
-            <article class="panel chart-panel">
-              <div class="section-heading compact">
-                <div><p class="eyebrow">All active funds</p><h3>Combined Portfolio Growth</h3></div>
-                <div class="chart-controls" aria-label="Overview chart period">
-                  <span class="pill" id="overviewPerformanceRange">Loading</span>
-                </div>
-              </div>
-              <div class="chart-card combined-growth-chart"><canvas id="overviewReturnChart" height="280" data-chart-height="280"></canvas></div>
-            </article>
-          </section>
-
           <section class="overview-grid overview-lower-grid">
             <article class="panel">
-              <div class="section-heading compact"><div><p class="eyebrow">Capital allocation</p><h3>Active Book Mix</h3></div><span class="pill">By market value</span></div>
+              <div class="section-heading compact"><h3>Capital Allocation</h3></div>
               <div class="donut-wrap overview-donut-wrap"><div class="donut" id="overviewFundDonut"></div><div class="donut-legend" id="overviewFundLegend"></div></div>
             </article>
             <article class="panel">
-              <div class="section-heading compact"><div><p class="eyebrow">Performance attribution</p><h3>Fund P/L Contribution</h3></div><span class="pill">Combined total</span></div>
+              <div class="section-heading compact"><h3>P&amp;L Contribution</h3></div>
               <div class="contribution-list" id="overviewContributionList"></div>
             </article>
           </section>
@@ -176,7 +162,7 @@
         <section class="app-view" id="view-freddy" data-view-panel="freddy" hidden>
           <article class="fund-hero">
             <div class="hero-heading">
-              <div><p class="eyebrow">Primary active book</p><h3>PI Freddy Total P/L</h3></div>
+              <h3>PI Freddy</h3>
               <span class="status-chip active">Active</span>
             </div>
             <div class="hero-body">
@@ -189,15 +175,13 @@
             </div>
           </article>
 
-          <section class="metric-grid metrics-strip">
-            <article class="metric-card"><span class="has-tooltip" tabindex="0" data-tooltip="Current scenario price multiplied by open shares.">Market Value</span><strong id="freddyMarketValue">-</strong><small>Current open book</small></article>
-            <article class="metric-card"><span class="has-tooltip" tabindex="0" data-tooltip="Weighted-average acquisition cost of open positions.">Cost Basis</span><strong id="freddyCostBasis">-</strong><small>WAC cost of open positions</small></article>
-            <article class="metric-card"><span class="has-tooltip" tabindex="0" data-tooltip="Estimated transaction fees recorded in the source sheet.">Estimated Fees</span><strong id="freddyFees">-</strong><small>Statement activity</small></article>
+          <section class="metric-grid metrics-strip three-up">
+            <article class="metric-card"><span class="has-tooltip" tabindex="0" data-tooltip="Current scenario price multiplied by open shares.">Market Value</span><strong id="freddyMarketValue">-</strong></article>
+            <article class="metric-card"><span class="has-tooltip" tabindex="0" data-tooltip="Estimated transaction fees recorded in the source sheet.">Estimated Fees</span><strong id="freddyFees">-</strong></article>
             <article class="metric-card"><span class="has-tooltip" tabindex="0" data-tooltip="Share of completed trades with a positive net result.">Win Rate</span><strong id="freddyWinRate">-</strong><small id="freddyProfitFactor">Profit factor</small></article>
           </section>
 
           <section class="panel portfolio-workspace fund-positions-panel">
-            <div class="section-heading"><div><p class="eyebrow">Live exposure</p><h3>Open Positions</h3></div><span class="pill" id="freddyPositionStatus">Loading</span></div>
             <div class="position-cards position-card-feed" id="freddyPositionCards"></div>
             <div class="portfolio-layout">
               <div class="positions-table-pane table-wrap"><table><thead><tr><th>Ticker</th><th>Lots</th><th>Avg Cost</th><th>Scenario Price</th><th>Market Value</th><th>Unrealized</th><th>Weight</th><th>Risk</th></tr></thead><tbody id="freddyPositionsTable"></tbody></table></div>
@@ -233,7 +217,7 @@
         <section class="app-view" id="view-jason" data-view-panel="jason" hidden>
           <article class="fund-hero blue-hero">
             <div class="hero-heading">
-              <div><p class="eyebrow">Active satellite book</p><h3>PI Jason Total P/L</h3></div>
+              <h3>PI Jason</h3>
               <span class="status-chip active">Active</span>
             </div>
             <div class="hero-body">
@@ -247,14 +231,13 @@
           </article>
 
           <section class="metric-grid metrics-strip">
-            <article class="metric-card"><span>Starting Capital</span><strong id="jasonStartCapital">-</strong><small>Allocated capital</small></article>
-            <article class="metric-card"><span>Cash</span><strong id="jasonCash">-</strong><small>After fees</small></article>
-            <article class="metric-card"><span>Market Value</span><strong id="jasonMarketValue">-</strong><small>Open positions</small></article>
-            <article class="metric-card"><span>Total Fees</span><strong id="jasonFees">-</strong><small>Buy and sell fees</small></article>
+            <article class="metric-card"><span>Starting Capital</span><strong id="jasonStartCapital">-</strong></article>
+            <article class="metric-card"><span>Cash</span><strong id="jasonCash">-</strong></article>
+            <article class="metric-card"><span>Market Value</span><strong id="jasonMarketValue">-</strong></article>
+            <article class="metric-card"><span>Total Fees</span><strong id="jasonFees">-</strong></article>
           </section>
 
           <section class="panel portfolio-workspace fund-positions-panel">
-            <div class="section-heading"><div><p class="eyebrow">Live exposure</p><h3>Open Positions</h3></div><span class="pill" id="jasonPositionStatus">Loading</span></div>
             <div class="position-cards position-card-feed" id="jasonPositionCards"></div>
             <div class="portfolio-layout">
               <div class="positions-table-pane table-wrap"><table><thead><tr><th>Ticker</th><th>Lots</th><th>Avg Cost</th><th>Current</th><th>Market Value</th><th>Open P/L</th><th>Return</th><th>Weight</th></tr></thead><tbody id="jasonPositionsTable"></tbody></table></div>
@@ -276,7 +259,7 @@
         <section class="app-view" id="view-shem" data-view-panel="shem" hidden>
           <article class="fund-hero green-hero">
             <div class="hero-heading">
-              <div><p class="eyebrow">Active growth book</p><h3>PI Shem Total P/L</h3></div>
+              <h3>PI Shem</h3>
               <span class="status-chip active">Active</span>
             </div>
             <div class="hero-body">
@@ -290,14 +273,13 @@
           </article>
 
           <section class="metric-grid metrics-strip">
-            <article class="metric-card"><span>Starting Capital</span><strong id="shemStartCapital">-</strong><small>Allocated capital</small></article>
-            <article class="metric-card"><span>Cash</span><strong id="shemCash">-</strong><small>After fees</small></article>
-            <article class="metric-card"><span>Market Value</span><strong id="shemMarketValue">-</strong><small>Open positions</small></article>
-            <article class="metric-card"><span>Total Fees</span><strong id="shemFees">-</strong><small>Buy and sell fees</small></article>
+            <article class="metric-card"><span>Starting Capital</span><strong id="shemStartCapital">-</strong></article>
+            <article class="metric-card"><span>Cash</span><strong id="shemCash">-</strong></article>
+            <article class="metric-card"><span>Market Value</span><strong id="shemMarketValue">-</strong></article>
+            <article class="metric-card"><span>Total Fees</span><strong id="shemFees">-</strong></article>
           </section>
 
           <section class="panel portfolio-workspace fund-positions-panel">
-            <div class="section-heading"><div><p class="eyebrow">Live exposure</p><h3>Open Positions</h3></div><span class="pill" id="shemPositionStatus">Loading</span></div>
             <div class="position-cards position-card-feed" id="shemPositionCards"></div>
             <div class="portfolio-layout">
               <div class="positions-table-pane table-wrap"><table><thead><tr><th>Ticker</th><th>Lots</th><th>Avg Cost</th><th>Current</th><th>Market Value</th><th>Open P/L</th><th>Return</th><th>Weight</th></tr></thead><tbody id="shemPositionsTable"></tbody></table></div>
@@ -400,6 +382,6 @@
       </main>
     </div>
 
-    <script src="./app.js?v=antm-research-20260913"></script>
+    <script src="./app.js?v=fund-cleanup-v2-20260929"></script>
   </body>
 </html>

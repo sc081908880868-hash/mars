@@ -79,10 +79,10 @@ const COMPANY_META = {
 };
 
 const VIEW_COPY = {
-  overview: ["Executive fund dashboard", "PI Freddy Overview"],
-  freddy: ["Primary active fund", "PI Freddy Book"],
-  jason: ["Active satellite fund", "PI Jason Book"],
-  shem: ["Active growth fund", "PI Shem Book"],
+  overview: ["", "Overview"],
+  freddy: ["", "PI Freddy"],
+  jason: ["", "PI Jason"],
+  shem: ["", "PI Shem"],
   robby: ["Completed fund review", "PI Robby Closed Book"],
   research: ["Research library", "Research & Market Outlooks"],
 };
@@ -285,6 +285,7 @@ function rerenderScenario(book, activeTicker) {
   if (!currentModel || book !== "freddy") return;
   renderOverview(currentModel);
   renderFreddy(currentModel.freddy);
+  styleCurrencyPrefixes();
   window.requestAnimationFrame(() => {
     renderVisibleCharts();
     if (activeTicker) restoreScenarioFocus(book, activeTicker);
@@ -674,7 +675,17 @@ function render(model) {
   renderJason(model.jason);
   renderShem(model.shem);
   renderRobby(model.robby);
+  styleCurrencyPrefixes();
   renderVisibleCharts();
+}
+
+function styleCurrencyPrefixes(root = document) {
+  root.querySelectorAll("body *").forEach((element) => {
+    if (element.children.length || element.matches("script, style, svg, canvas, .currency-prefix")) return;
+    const text = element.textContent || "";
+    if (!/Rp(?=\d)/.test(text)) return;
+    element.innerHTML = escapeHtml(text).replace(/Rp(?=\d)/g, '<span class="currency-prefix">Rp</span>');
+  });
 }
 
 function renderMarketTape() {
@@ -692,15 +703,11 @@ function renderOverview(model) {
   const freddySummary = recalcFreddySummary(freddy, freddyPositions);
   const latestDaily = freddy.history.at(-1)?.dailyPnl || 0;
   const activePnl = freddySummary.totalPnl + jason.totalPnl + shem.totalPnl;
-  const combinedRealized = freddySummary.realized + jason.realized + shem.realized;
-  const combinedUnrealized = freddySummary.unrealized + jason.unrealized + shem.unrealized;
   const activeExposure = freddySummary.marketValue + jason.marketValue + shem.marketValue;
   const activeOpenCount = freddyPositions.length + jason.positions.length + shem.positions.length;
   const mtdGrowth = combinedGrowth.at(-1)?.value || 0;
-  setMoney("overviewTotalPnl", activePnl, true);
-  setMoney("overviewRealized", combinedRealized, true);
-  setMoney("overviewUnrealized", combinedUnrealized, true);
-  $("overviewMarketValue").textContent = idr(activeExposure, true);
+  const totalEquity = freddySummary.marketValue + jason.cashAfterFees + jason.marketValue + shem.cashAfterFees + shem.marketValue;
+  $("overviewTotalEquity").textContent = idr(totalEquity, true);
   setMoney("overviewActivePnl", activePnl, true);
   setMoney("overviewDailyPnl", mtdGrowth, true);
   $("overviewCash").textContent = idr(jason.cashAfterFees + shem.cashAfterFees, true);
@@ -708,13 +715,12 @@ function renderOverview(model) {
   $("overviewOpenPositions").textContent = numberFmt.format(activeOpenCount);
 
   const snapshot = [
-    { view: "freddy", label: "Primary fund", name: "PI Freddy", status: "Active", pnl: freddySummary.totalPnl, daily: latestDaily, detail: `${freddyPositions.length} open positions`, value: freddySummary.marketValue },
-    { view: "jason", label: "Satellite fund", name: "PI Jason", status: "Active", pnl: jason.totalPnl, daily: latestRealizedDaily(jason), detail: `${jason.positions.length} open positions`, value: jason.cashAfterFees + jason.marketValue },
-    { view: "shem", label: "Growth fund", name: "PI Shem", status: "Active", pnl: shem.totalPnl, daily: latestRealizedDaily(shem), detail: `${shem.positions.length} open positions`, value: shem.cashAfterFees + shem.marketValue },
+    { view: "freddy", name: "PI Freddy", status: "Active", pnl: freddySummary.totalPnl, daily: latestDaily, detail: `${freddyPositions.length} open positions`, value: freddySummary.marketValue },
+    { view: "jason", name: "PI Jason", status: "Active", pnl: jason.totalPnl, daily: latestRealizedDaily(jason), detail: `${jason.positions.length} open positions`, value: jason.cashAfterFees + jason.marketValue },
+    { view: "shem", name: "PI Shem", status: "Active", pnl: shem.totalPnl, daily: latestRealizedDaily(shem), detail: `${shem.positions.length} open positions`, value: shem.cashAfterFees + shem.marketValue },
   ];
   $("fundSnapshotGrid").innerHTML = snapshot.map((fund) => `
     <button class="fund-snapshot" type="button" data-open-view="${fund.view}">
-      <span class="snapshot-label">${fund.label}<i class="status-dot ${fund.status.toLowerCase()}"></i></span>
       <strong>${fund.name}</strong>
       <b class="${signedClass(fund.pnl)}">${idr(fund.pnl, true)}</b>
       <span class="snapshot-change ${signedClass(fund.daily)}">${fund.status === "Closed" ? "Final result" : fund.daily === null ? "Today -" : `Today ${idr(fund.daily, true)}`}</span>
@@ -764,11 +770,9 @@ function renderFreddy(fund) {
   setMoney("freddyUnrealized", summary.unrealized, true);
   $("freddyOpenCount").textContent = numberFmt.format(positions.length);
   $("freddyMarketValue").textContent = idr(summary.marketValue, true);
-  $("freddyCostBasis").textContent = idr(summary.costBasis, true);
   $("freddyFees").textContent = idr(fund.dashboard["EST. TOTAL FEES"], true);
   $("freddyWinRate").textContent = pct(fund.dashboard["WIN RATE"]);
   $("freddyProfitFactor").textContent = `Profit factor ${priceFmt.format(asNumber(fund.dashboard["PROFIT FACTOR"]))}`;
-  $("freddyPositionStatus").textContent = `${positions.length} open`;
   $("freddyPositionCards").innerHTML = positionCards(positions);
   $("freddyPositionsTable").innerHTML = positionTableRows(positions, true, { editableCurrent: true, book: "freddy" });
   renderDonut("freddyDonut", "freddyLegend", positions);
@@ -787,7 +791,6 @@ function renderJason(fund) {
   $("jasonCash").textContent = idr(fund.cashAfterFees, true);
   $("jasonMarketValue").textContent = idr(fund.marketValue, true);
   $("jasonFees").textContent = idr(fund.fees, true);
-  $("jasonPositionStatus").textContent = `${fund.positions.length} open`;
   $("jasonPositionCards").innerHTML = positionCards(fund.positions);
   $("jasonPositionsTable").innerHTML = positionTableRows(fund.positions, false);
   renderDonut("jasonDonut", "jasonLegend", fund.positions);
@@ -807,7 +810,6 @@ function renderShem(fund) {
   $("shemCash").textContent = idr(fund.cashAfterFees, true);
   $("shemMarketValue").textContent = idr(fund.marketValue, true);
   $("shemFees").textContent = idr(fund.fees, true);
-  $("shemPositionStatus").textContent = `${fund.positions.length} open`;
   $("shemPositionCards").innerHTML = positionCards(fund.positions);
   $("shemPositionsTable").innerHTML = positionTableRows(fund.positions, false);
   renderDonut("shemDonut", "shemLegend", fund.positions);
@@ -1091,8 +1093,10 @@ function showView(name, updateHash = true) {
   });
   document.querySelectorAll(".nav-link").forEach((link) => link.classList.toggle("active", link.dataset.view === name));
   document.querySelector(".topbar")?.classList.toggle("overview-mode", name === "overview");
-  $("viewEyebrow").textContent = VIEW_COPY[name][0];
-  $("viewTitle").textContent = VIEW_COPY[name][1];
+  const [eyebrow, title] = VIEW_COPY[name];
+  $("viewEyebrow").textContent = eyebrow;
+  $("viewEyebrow").hidden = !eyebrow;
+  $("viewTitle").textContent = title;
   if (updateHash) history.replaceState(null, "", `#${name}`);
   $("mobileMenuButton").setAttribute("aria-expanded", "false");
   document.querySelector(".sidebar")?.classList.remove("menu-open");

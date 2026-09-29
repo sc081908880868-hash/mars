@@ -13,6 +13,8 @@
   --cyan: #30d5ff;
   --shadow: 0 20px 52px rgba(0, 0, 0, 0.42);
   --tape-height: 42px;
+  --font-display: Didot, "Bodoni 72", "Bodoni MT", Baskerville, "Times New Roman", serif;
+  --font-sans: "Avenir Next", Avenir, Montserrat, "Helvetica Neue", Arial, sans-serif;
 }
 
 * {
@@ -28,7 +30,7 @@ body {
   padding-top: var(--tape-height);
   background: linear-gradient(180deg, #07090c 0%, #091018 46%, #030405 100%);
   color: var(--ink);
-  font-family: Cambria, Georgia, "Times New Roman", Times, serif;
+  font-family: var(--font-sans);
   letter-spacing: 0;
   overflow-x: hidden;
 }
@@ -178,13 +180,23 @@ table {
 
 .brand-lockup {
   display: grid;
-  grid-template-columns: 64px minmax(0, 1fr);
-  align-items: center;
-  justify-content: flex-start;
-  gap: 14px;
-  padding: 0 4px;
+  place-items: center;
+  padding: 6px 4px;
   width: 100%;
   min-width: 0;
+  height: 78px;
+  border: 1px solid rgba(248, 250, 252, 0.09);
+  border-radius: 12px;
+  background: linear-gradient(145deg, rgba(248, 250, 252, 0.055), rgba(248, 250, 252, 0.012));
+  box-shadow: 0 18px 36px rgba(0, 0, 0, 0.24), inset 0 1px 0 rgba(255, 255, 255, 0.045);
+}
+
+.brand-logo {
+  display: block;
+  width: 100%;
+  max-width: 100%;
+  height: auto;
+  filter: drop-shadow(0 2px 8px rgba(0, 0, 0, 0.42));
 }
 
 .brand-mark {
@@ -549,6 +561,10 @@ h3 {
   box-shadow: var(--shadow);
 }
 
+.metrics-strip.three-up {
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+}
+
 .metrics-strip .metric-card {
   min-height: 82px;
   border: 0;
@@ -781,6 +797,26 @@ tbody tr:nth-child(even) {
 
 .negative {
   color: var(--red);
+}
+
+.currency-prefix {
+  display: inline-block;
+  flex: 0 0 auto;
+  margin-right: 0.08em;
+  color: currentColor;
+  font-family: var(--font-sans);
+  font-size: clamp(0.54rem, 0.5em, 1.45rem);
+  font-weight: 800;
+  line-height: 1;
+  letter-spacing: 0.015em;
+  vertical-align: 0.36em;
+}
+
+.hero-value .currency-prefix,
+.performance-blast-lead > strong .currency-prefix {
+  margin-right: 0.045em;
+  font-size: clamp(0.74rem, 0.27em, 1.5rem);
+  vertical-align: 0.72em;
 }
 
 .risk-pill {
@@ -1361,6 +1397,41 @@ footer {
   font-size: clamp(3.35rem, 7vw, 6rem);
 }
 
+.total-equity-hero {
+  min-height: 290px;
+  align-items: center;
+  justify-content: center;
+  gap: 24px;
+  text-align: center;
+  border-color: rgba(224, 185, 69, 0.42);
+  background:
+    radial-gradient(circle at 50% 52%, rgba(224, 185, 69, 0.14), transparent 42%),
+    linear-gradient(110deg, rgba(122, 31, 43, 0.18), transparent 42%),
+    linear-gradient(180deg, #111923 0%, #070b10 100%);
+  box-shadow: inset 0 2px 0 rgba(224, 185, 69, 0.3), 0 26px 65px rgba(0, 0, 0, 0.4);
+}
+
+.total-equity-hero .hero-heading,
+.total-equity-hero .hero-body {
+  width: 100%;
+  align-items: center;
+  justify-content: center;
+}
+
+.total-equity-hero .eyebrow {
+  color: #d6ad3c;
+  font-size: 0.95rem;
+  letter-spacing: 0.16em;
+}
+
+.total-equity-hero .hero-value {
+  color: #e0b945;
+  font-size: clamp(4.8rem, 10vw, 8.75rem);
+  letter-spacing: 0.025em;
+  line-height: 0.82;
+  text-shadow: 0 0 38px rgba(224, 185, 69, 0.24), 0 2px 0 rgba(255, 231, 153, 0.08);
+}
+
 .fund-hero {
   min-height: 210px;
   padding: 22px;
@@ -1467,6 +1538,9 @@ footer {
 }
 
 .hero-breakdown b {
+  display: inline-flex;
+  align-items: baseline;
+  justify-content: flex-end;
   color: var(--ink);
   white-space: nowrap;
 }
@@ -1526,9 +1600,18 @@ footer {
   gap: 12px;
 }
 
+.overview-active-books {
+  display: grid;
+  gap: 0;
+}
+
+.overview-funds-heading {
+  padding: 0 2px;
+}
+
 .fund-snapshot {
   min-width: 0;
-  min-height: 170px;
+  min-height: 152px;
   padding: 16px;
   border: 1px solid var(--line);
   border-radius: 8px;
@@ -1845,7 +1928,7 @@ footer {
 }
 
 body {
-  font-family: Inter, ui-sans-serif, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+  font-family: var(--font-sans);
 }
 
 h1,
@@ -1854,7 +1937,7 @@ h3,
 h4,
 .hero-value,
 .fund-snapshot > b {
-  font-family: Cambria, Georgia, "Times New Roman", serif;
+  font-family: var(--font-display);
 }
 
 .app-shell {
@@ -1867,8 +1950,7 @@ h4,
 }
 
 .brand-lockup {
-  grid-template-columns: 56px minmax(0, 1fr);
-  gap: 12px;
+  height: 74px;
 }
 
 .brand-mark {
@@ -1957,12 +2039,12 @@ h4,
 }
 
 .performance-blast::after {
-  content: "73";
+  content: "75";
   position: absolute;
   right: -12px;
   bottom: -72px;
   color: rgba(255, 255, 255, 0.025);
-  font-family: Georgia, "Times New Roman", serif;
+  font-family: var(--font-display);
   font-size: 15rem;
   font-weight: 900;
   line-height: 1;
@@ -2000,7 +2082,7 @@ h4,
 .performance-blast-lead > p {
   margin: 0;
   color: #f3f6fa;
-  font-family: Georgia, "Times New Roman", serif;
+  font-family: var(--font-display);
   font-size: clamp(1.25rem, 2vw, 1.7rem);
   font-weight: 800;
 }
@@ -2009,7 +2091,7 @@ h4,
   display: block;
   margin: 2px 0 13px;
   color: var(--green);
-  font-family: Georgia, "Times New Roman", serif;
+  font-family: var(--font-display);
   font-size: clamp(3.5rem, 7vw, 5.8rem);
   line-height: 0.95;
   letter-spacing: -0.055em;
@@ -2077,9 +2159,12 @@ h4,
 }
 
 .performance-blast-metrics strong {
-  font-family: Georgia, "Times New Roman", serif;
-  font-size: clamp(1.25rem, 2vw, 1.75rem);
-  overflow-wrap: anywhere;
+  display: inline-flex;
+  align-items: baseline;
+  font-family: var(--font-display);
+  font-size: clamp(1.2rem, 1.8vw, 1.6rem);
+  overflow-wrap: normal;
+  white-space: nowrap;
 }
 
 .overview-kpi {
@@ -2137,7 +2222,10 @@ h4,
 }
 
 .fund-snapshot > b {
+  display: inline-flex;
+  align-items: baseline;
   font-size: clamp(1.35rem, 2.1vw, 1.7rem);
+  white-space: nowrap;
 }
 
 .chart-controls {
@@ -2229,7 +2317,7 @@ h4,
 }
 
 .contribution-row strong {
-  font-family: Georgia, "Times New Roman", serif;
+  font-family: var(--font-display);
   font-size: 1.3rem;
 }
 
@@ -2309,6 +2397,11 @@ h4,
     padding: 16px;
   }
 
+  .brand-lockup {
+    width: 228px;
+    flex: 0 0 228px;
+  }
+
   nav {
     grid-auto-flow: column;
     overflow-x: auto;
@@ -2335,6 +2428,10 @@ h4,
   }
 
   .metrics-strip {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+
+  .metrics-strip.three-up {
     grid-template-columns: repeat(2, minmax(0, 1fr));
   }
 
@@ -2613,7 +2710,8 @@ h4,
   }
 
   .brand-lockup {
-    grid-template-columns: 50px minmax(0, 1fr);
+    width: 100%;
+    height: 72px;
   }
 
   h1 {
