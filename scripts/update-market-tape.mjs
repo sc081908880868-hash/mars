@@ -13,19 +13,8 @@ if (!apiKey) throw new Error("TWELVE_DATA_API_KEY is required");
 const previous = JSON.parse(await readFile(outputPath, "utf8"));
 const previousBySymbol = new Map((previous.stocks || []).map((item) => [item.symbol, item]));
 
-async function getDailyBars(symbol) {
-  const params = new URLSearchParams({
-    symbol,
-    exchange: "IDX",
-    interval: "1day",
-    outputsize: "2",
-    timezone: "Asia/Jakarta",
-    apikey: apiKey,
-  });
-  const response = await fetch(`https://api.twelvedata.com/time_series?${params}`);
-  if (!response.ok) throw new Error(`${symbol}: HTTP ${response.status}`);
-  const payload = await response.json();
-  if (payload.status === "error") throw new Error(`${symbol}: ${payload.message}`);
+function parseDailyBars(symbol, payload) {
+  if (payload?.status === "error") throw new Error(`${symbol}: ${payload.message}`);
   const bars = Array.isArray(payload.values) ? payload.values : [];
   if (bars.length < 2) throw new Error(`${symbol}: fewer than two daily bars`);
   const last = Number(bars[0].close);
@@ -39,7 +28,33 @@ async function getDailyBars(symbol) {
   };
 }
 
-const settled = await Promise.allSettled(symbols.map(getDailyBars));
+async function getDailyBars(symbol, index) {
+  // Twelve Data's basic quota is eight requests per minute. Spacing calls also
+  // prevents a single scheduled refresh from producing HTTP 429 responses.
+  if (index) await new Promise((resolveDelay) => setTimeout(resolveDelay, 8_000));
+  const params = new URLSearchParams({
+    symbol: `${symbol}:IDX`,
+    interval: "1day",
+    outputsize: "2",
+    timezone: "Asia/Jakarta",
+    apikey: apiKey,
+  });
+  const response = await fetch(`https://api.twelvedata.com/time_series?${params}`);
+  const payload = await response.json().catch(() => ({}));
+  if (!response.ok) {
+    throw new Error(`${symbol}: HTTP ${response.status}${payload?.message ? ` — ${payload.message}` : ""}`);
+  }
+  return parseDailyBars(symbol, payload);
+}
+
+const settled = [];
+for (const [index, symbol] of symbols.entries()) {
+  try {
+    settled.push({ status: "fulfilled", value: await getDailyBars(symbol, index) });
+  } catch (reason) {
+    settled.push({ status: "rejected", reason });
+  }
+}
 const fresh = settled.filter((item) => item.status === "fulfilled").map((item) => item.value);
 const failed = settled.filter((item) => item.status === "rejected");
 
