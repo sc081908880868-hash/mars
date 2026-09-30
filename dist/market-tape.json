@@ -1,0 +1,19 @@
+{
+  "session": "2026-09-30",
+  "updatedAt": "2026-09-30T16:30:00+07:00",
+  "source": "bundled-fallback",
+  "stocks": [
+    { "symbol": "BBCA", "last": 6100, "changePct": 0.0517 },
+    { "symbol": "DSSA", "last": 840, "changePct": 0.0435 },
+    { "symbol": "BBRI", "last": 2720, "changePct": 0.0112 },
+    { "symbol": "TPIA", "last": 2230, "changePct": 0.0141 },
+    { "symbol": "BMRI", "last": 4020, "changePct": 0.0308 },
+    { "symbol": "BRPT", "last": 1870, "changePct": 0.0067 },
+    { "symbol": "ANTM", "last": 2910, "changePct": 0.0543 },
+    { "symbol": "BNBR", "last": 109, "changePct": 0.0381 },
+    { "symbol": "AMMN", "last": 4270, "changePct": 0.0071 },
+    { "symbol": "BRMS", "last": 625, "changePct": 0.0331 },
+    { "symbol": "EMAS", "last": 7775, "changePct": 0.031 },
+    { "symbol": "DEWA", "last": 454, "changePct": 0.0167 }
+  ]
+}

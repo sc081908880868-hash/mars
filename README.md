@@ -20,6 +20,12 @@ The site reads live data from this Google Sheet:
 
 It refreshes automatically every 4 minutes and also has a manual refresh button.
 
+## Automated Market Tape
+
+The moving tape reads `market-tape.json`. A GitHub Actions workflow refreshes the IDX closing prices at 16:30 Asia/Jakarta on trading weekdays using Twelve Data, then commits the new snapshot so Netlify redeploys it automatically.
+
+Repository setup requires one Actions secret named `TWELVE_DATA_API_KEY`. The previous valid snapshot remains in place if the data provider is unavailable or returns stale data. The workflow can also be run manually from the Actions tab.
+
 ## Sharing Note
 
 This static website is published by Netlify from the GitHub repository's `main` branch. Push validated updates to `main`; Netlify deploys them automatically.

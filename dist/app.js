@@ -42,7 +42,7 @@ const DETAIL_KEYS = {
 const DETAIL_KEY_SET = new Set(Object.values(DETAIL_KEYS).flat());
 const CORE_KEYS = Object.keys(RANGES).filter((key) => !DETAIL_KEY_SET.has(key));
 
-const TRENDING_STOCKS = [
+const FALLBACK_TRENDING_STOCKS = [
   { symbol: "BBCA", last: "6,100", changePct: 0.0517 },
   { symbol: "DSSA", last: "840", changePct: 0.0435 },
   { symbol: "BBRI", last: "2,720", changePct: 0.0112 },
@@ -56,6 +56,8 @@ const TRENDING_STOCKS = [
   { symbol: "EMAS", last: "7,775", changePct: 0.031 },
   { symbol: "DEWA", last: "454", changePct: 0.0167 },
 ];
+let marketTapeData = FALLBACK_TRENDING_STOCKS;
+let marketTapeSession = "";
 
 const COMPANY_META = {
   EMAS: ["Merdeka Gold Resources", "merdekagoldresources.com"],
@@ -689,12 +691,40 @@ function styleCurrencyPrefixes(root = document) {
 }
 
 function renderMarketTape() {
-  const markup = TRENDING_STOCKS.map((item) => {
+  const stocks = marketTapeData.length ? marketTapeData : FALLBACK_TRENDING_STOCKS;
+  const sessionLabel = marketTapeSession
+    ? `<span class="tape-item neutral tape-session"><strong>IDX CLOSE</strong><small>${escapeHtml(marketTapeSession)}</small></span>`
+    : "";
+  const markup = sessionLabel + stocks.map((item) => {
     const direction = item.changePct > 0 ? "up" : item.changePct < 0 ? "down" : "neutral";
     const arrow = item.changePct > 0 ? "&#8599;" : item.changePct < 0 ? "&#8600;" : "&#8226;";
-    return `<span class="tape-item ${direction}"><strong>${item.symbol}</strong><b>${item.last}</b><em>${arrow} ${pct(item.changePct)}</em></span>`;
+    return `<span class="tape-item ${direction}"><strong>${escapeHtml(item.symbol)}</strong><b>${priceFmt.format(asNumber(item.last))}</b><em>${arrow} ${pct(asNumber(item.changePct))}</em></span>`;
   }).join("");
   $("marketTapeTrack").innerHTML = `<div class="market-tape-group">${markup}</div><div class="market-tape-group" aria-hidden="true">${markup}</div>`;
+}
+
+async function loadMarketTape(forceFresh = false) {
+  try {
+    const cacheBust = forceFresh ? Date.now() : Math.floor(Date.now() / 300000);
+    const response = await fetch(`./market-tape.json?v=${cacheBust}`, { cache: "no-store" });
+    if (!response.ok) throw new Error(`Market tape returned ${response.status}`);
+    const payload = await response.json();
+    const stocks = Array.isArray(payload.stocks) ? payload.stocks : [];
+    const valid = stocks
+      .map((item) => ({
+        symbol: String(item.symbol || "").trim().toUpperCase(),
+        last: asNumber(item.last),
+        changePct: asNumber(item.changePct),
+      }))
+      .filter((item) => item.symbol && item.last > 0 && Number.isFinite(item.changePct));
+    if (!valid.length) throw new Error("Market tape contains no valid stocks");
+    marketTapeData = valid;
+    marketTapeSession = String(payload.session || "");
+    renderMarketTape();
+  } catch (error) {
+    console.warn("Using the last bundled market tape", error);
+    renderMarketTape();
+  }
 }
 
 function renderOverview(model) {
@@ -735,6 +765,7 @@ function renderOverview(model) {
   ];
   const allocationTotal = allocations.reduce((sum, item) => sum + item.marketValue, 0);
   allocations.forEach((item) => { item.weight = allocationTotal ? item.marketValue / allocationTotal : 0; });
+  $("overviewAllocationTotal").textContent = idr(allocationTotal, true);
   renderDonut("overviewFundDonut", "overviewFundLegend", allocations);
   renderFundContributions([
     { name: "PI Freddy", pnl: freddySummary.totalPnl, color: COLORS[0] },
@@ -745,12 +776,19 @@ function renderOverview(model) {
 
 function renderFundContributions(funds) {
   const maxMagnitude = Math.max(...funds.map((fund) => Math.abs(fund.pnl)), 1);
-  $("overviewContributionList").innerHTML = funds.map((fund) => `
-    <article class="contribution-row">
-      <div><span><i style="background:${fund.color}"></i>${fund.name}</span><strong class="${signedClass(fund.pnl)}">${idr(fund.pnl, true)}</strong></div>
-      <div class="contribution-track"><span class="${signedClass(fund.pnl)}" style="width:${Math.max(5, Math.abs(fund.pnl) / maxMagnitude * 100)}%;background:${fund.color}"></span></div>
-    </article>
-  `).join("");
+  $("overviewContributionList").innerHTML = funds.map((fund) => {
+    const tone = signedClass(fund.pnl) || "neutral";
+    const width = Math.max(2.5, Math.abs(fund.pnl) / maxMagnitude * 50);
+    const left = fund.pnl < 0 ? 50 - width : 50;
+    return `
+      <article class="contribution-row">
+        <div><span><i style="background:${fund.color}"></i>${fund.name}</span><strong class="${tone}">${idr(fund.pnl, true)}</strong></div>
+        <div class="contribution-axis" aria-label="${escapeHtml(fund.name)} ${fund.pnl >= 0 ? "positive" : "negative"} contribution">
+          <span class="contribution-bar ${tone}" style="left:${left}%;width:${width}%"></span>
+        </div>
+      </article>
+    `;
+  }).join("");
 }
 
 function latestRealizedDaily(fund) {
@@ -950,9 +988,9 @@ function renderVisibleCharts() {
 
 function drawCombinedGrowthChart(canvas, rows) {
   const { ctx, width, height } = setupCanvas(canvas);
-  const pad = { top: 38, right: 24, bottom: 34, left: 62 };
+  const pad = { top: 42, right: 28, bottom: 34, left: 62 };
   ctx.clearRect(0, 0, width, height);
-  drawChartFrame(ctx, width, height, pad);
+  drawChartFrame(ctx, width, height, pad, 3, "rgba(143, 161, 180, 0.16)");
   if (!rows.length) {
     ctx.fillStyle = "#8fa1b4";
     ctx.font = "14px system-ui";
@@ -968,8 +1006,9 @@ function drawCombinedGrowthChart(canvas, rows) {
     y: height - pad.bottom - ((row.value - min) / span) * (height - pad.top - pad.bottom),
   });
   const gradient = ctx.createLinearGradient(0, pad.top, 0, height - pad.bottom);
-  gradient.addColorStop(0, "rgba(0, 208, 132, 0.28)");
-  gradient.addColorStop(1, "rgba(0, 208, 132, 0.01)");
+  gradient.addColorStop(0, "rgba(224, 185, 69, 0.24)");
+  gradient.addColorStop(0.62, "rgba(122, 31, 43, 0.1)");
+  gradient.addColorStop(1, "rgba(122, 31, 43, 0.015)");
   ctx.beginPath();
   rows.forEach((row, index) => {
     const { x, y } = point(row, index);
@@ -987,16 +1026,35 @@ function drawCombinedGrowthChart(canvas, rows) {
     const { x, y } = point(row, index);
     if (index === 0) ctx.moveTo(x, y); else ctx.lineTo(x, y);
   });
-  ctx.strokeStyle = rows.at(-1).value >= 0 ? "#00d084" : "#ff4d4d";
-  ctx.lineWidth = 3;
+  ctx.strokeStyle = "#e0b945";
+  ctx.lineWidth = 2;
+  ctx.lineJoin = "round";
+  ctx.lineCap = "round";
   ctx.stroke();
-  rows.forEach((row, index) => {
-    const { x, y } = point(row, index);
-    ctx.beginPath();
-    ctx.arc(x, y, 3.5, 0, Math.PI * 2);
-    ctx.fillStyle = row.value >= 0 ? "#00d084" : "#ff4d4d";
-    ctx.fill();
-  });
+  ctx.save();
+  ctx.shadowColor = "rgba(224, 185, 69, 0.72)";
+  ctx.shadowBlur = 16;
+  ctx.beginPath();
+  ctx.arc(lastPoint.x, lastPoint.y, 6, 0, Math.PI * 2);
+  ctx.fillStyle = "#e0b945";
+  ctx.fill();
+  ctx.restore();
+  ctx.beginPath();
+  ctx.arc(lastPoint.x, lastPoint.y, 2.5, 0, Math.PI * 2);
+  ctx.fillStyle = "#fff4c9";
+  ctx.fill();
+  const markerLabel = idr(rows.at(-1).value, true);
+  ctx.font = "800 11px system-ui";
+  const markerWidth = ctx.measureText(markerLabel).width + 16;
+  const markerX = Math.max(pad.left, lastPoint.x - markerWidth - 10);
+  const markerY = Math.max(pad.top + 5, lastPoint.y - 27);
+  ctx.fillStyle = "rgba(7, 11, 16, 0.92)";
+  ctx.fillRect(markerX, markerY, markerWidth, 21);
+  ctx.strokeStyle = "rgba(224, 185, 69, 0.5)";
+  ctx.lineWidth = 1;
+  ctx.strokeRect(markerX, markerY, markerWidth, 21);
+  ctx.fillStyle = "#f4d982";
+  ctx.fillText(markerLabel, markerX + 8, markerY + 14);
   ctx.fillStyle = "#f1f5f9";
   ctx.font = "800 15px system-ui";
   ctx.fillText(`MTD ${idr(rows.at(-1).value, true)}`, pad.left, 20);
@@ -1071,11 +1129,11 @@ function setupCanvas(canvas) {
   return { ctx, width, height };
 }
 
-function drawChartFrame(ctx, width, height, pad) {
-  ctx.strokeStyle = "#263545";
+function drawChartFrame(ctx, width, height, pad, segments = 4, color = "#263545") {
+  ctx.strokeStyle = color;
   ctx.lineWidth = 1;
-  for (let index = 0; index <= 4; index += 1) {
-    const y = pad.top + (index / 4) * (height - pad.top - pad.bottom);
+  for (let index = 0; index <= segments; index += 1) {
+    const y = pad.top + (index / segments) * (height - pad.top - pad.bottom);
     ctx.beginPath();
     ctx.moveTo(pad.left, y);
     ctx.lineTo(width - pad.right, y);
@@ -1153,7 +1211,10 @@ function setupInteractions() {
     else scenarioPrices[book].delete(ticker);
     rerenderScenario(book, ticker);
   });
-  $("refreshButton").addEventListener("click", () => loadDashboard({ forceFresh: true }));
+  $("refreshButton").addEventListener("click", () => {
+    loadMarketTape(true);
+    loadDashboard({ forceFresh: true });
+  });
   $("tapeToggle").addEventListener("click", () => {
     const paused = !document.querySelector(".market-tape")?.classList.contains("is-paused");
     document.querySelector(".market-tape")?.classList.toggle("is-paused", paused);
@@ -1184,5 +1245,6 @@ if (cachedDashboard) {
   $("refreshNote").textContent = "Refreshing in background";
 }
 showView(location.hash.slice(1) || "overview", false);
+loadMarketTape();
 loadDashboard();
 window.setInterval(loadDashboard, REFRESH_MS);
