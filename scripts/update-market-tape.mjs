@@ -43,6 +43,8 @@ const settled = await Promise.allSettled(symbols.map(getDailyBars));
 const fresh = settled.filter((item) => item.status === "fulfilled").map((item) => item.value);
 const failed = settled.filter((item) => item.status === "rejected");
 
+failed.forEach((item) => console.error(item.reason instanceof Error ? item.reason.message : item.reason));
+
 if (fresh.length < Math.ceil(symbols.length / 2)) {
   throw new Error(`Only ${fresh.length}/${symbols.length} symbols refreshed; preserving the prior tape`);
 }
