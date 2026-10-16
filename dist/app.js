@@ -1,6 +1,6 @@
 const SHEET_ID = "1N3DukPrLJBfqUW4jo0v72tuaPvD_4aVdao9k9sHVOxg";
 const REFRESH_MS = 4 * 60 * 1000;
-const CACHE_KEY = "ssj-dashboard-cache-v3";
+const CACHE_KEY = "ssj-dashboard-cache-v5";
 const CACHE_MAX_AGE = 6 * 60 * 60 * 1000;
 const REQUEST_TIMEOUT_MS = 30000;
 const REQUEST_CONCURRENCY = 4;
@@ -8,13 +8,13 @@ const REQUEST_ATTEMPTS = 2;
 const COLORS = ["#ffb000", "#23a7ff", "#00d084", "#ff4d4d", "#30d5ff", "#e6e8ec"];
 
 const RANGES = {
-  freddySummary: ["PI-FREDDY PORTFOLIO", "A3:K3"],
-  freddyPositions: ["PI-FREDDY PORTFOLIO", "A7:I25"],
-  freddyBlockMeta: ["PI-FREDDY PORTFOLIO", "A29:R30"],
-  freddyBlockTrades: ["PI-FREDDY PORTFOLIO", "A32:R80"],
-  freddyDashboard: ["PI-FREDDY", "I2:M24"],
-  freddyHistory: ["PI-FREDDY", "AA2:AF260"],
-  freddyRealized: ["PI-FREDDY", "A4:H300"],
+  freddySummary: ["PI-FREDDY", "A3:K3"],
+  freddyPositions: ["PI-FREDDY", "A7:I25"],
+  freddyBlockMeta: ["PI-FREDDY", "A29:R30"],
+  freddyBlockTrades: ["PI-FREDDY", "A32:R80"],
+  freddyDashboard: ["PI-FREDDY TRANSACTIONS", "I2:M24"],
+  freddyHistory: ["PI-FREDDY TRANSACTIONS", "AA2:AF260"],
+  freddyRealized: ["PI-FREDDY TRANSACTIONS", "A4:H300"],
   combinedGrowth: ["COMBINED ACTIVE PORTFOLIO", "A80:B140"],
   jasonCash: ["PI JASON", "A5:B11"],
   jasonSummary: ["PI JASON", "K5:O11"],
@@ -31,6 +31,10 @@ const RANGES = {
   robbyInfo: ["IPO ROBBY - CLOSED", "I11:K11"],
   robbyPositions: ["IPO ROBBY - CLOSED", "C6:H12"],
   robbyTransactions: ["IPO ROBBY - CLOSED", "A15:Q350"],
+};
+const SHEET_GIDS = {
+  "PI-FREDDY": 1900000002,
+  "PI-FREDDY TRANSACTIONS": 2088779730,
 };
 
 const DETAIL_KEYS = {
@@ -109,7 +113,7 @@ function gvizRange(sheet, range, forceFresh = false) {
   const callbackName = `ssjSheet_${Date.now()}_${Math.random().toString(36).slice(2)}`;
   const params = new URLSearchParams({
     headers: "0",
-    sheet,
+    ...(SHEET_GIDS[sheet] ? { gid: String(SHEET_GIDS[sheet]) } : { sheet }),
     range,
     tqx: `out:json;responseHandler:${callbackName}`,
     cacheBust: String(forceFresh ? Date.now() : Math.floor(Date.now() / 30000)),
@@ -483,7 +487,7 @@ function parseFreddyPositions(rows) {
     .map((row) => {
       const ticker = value(row, 0);
       const lots = asNumber(value(row, 1));
-      if (!ticker || lots <= 0) return null;
+      if (!/^[A-Z0-9]{4}$/.test(String(ticker || "").trim().toUpperCase()) || lots <= 0) return null;
       const avgCost = asNumber(value(row, 2));
       const current = asNumber(value(row, 3));
       const marketValue = asNumber(value(row, 4));
